@@ -6,11 +6,13 @@ import { Tbike } from './bike.interface';
 const bikeSchema = new Schema<Tbike >({
   name: {
     type: String,
+    trim: true,
     required: [true, 'Bike name is required'],
     minlength: [2, 'Bike name must be at least 2 characters long'],
   },
   brand: {
     type: String,
+    trim: true,
     required: [true, 'Brand name is required'],
     minlength: [2, 'Brand name must be at least 2 characters long'],
   },
@@ -21,10 +23,7 @@ const bikeSchema = new Schema<Tbike >({
   },
   category: {
     type: String,
-    enum: {
-        values: ['Mountain', 'Road', 'Hybrid', 'Electric'],
-        message: 'Category must be one of the following: Mountain, Road, Hybrid, Electric',
-      },
+    enum: ['Mountain', 'Road', 'Hybrid', 'Electric'],
     required: [true, 'Bike category is required'],
   },
   description: {
@@ -43,7 +42,7 @@ const bikeSchema = new Schema<Tbike >({
     default: true, // Default to true if not specified
   },
 }, {
-  timestamps: true, // Optional: Adds createdAt and updatedAt fields
+  timestamps: true, 
 });
 
 export const Bike = model<Tbike >('Bike', bikeSchema);
