@@ -39,7 +39,7 @@ const bikeSchema = new Schema<Tbike >({
   isStock: {
     type: Boolean,
     required: [true, 'Stock status is required'],
-    default: true, // Default to true if not specified
+    default: true,
   },
 }, {
   timestamps: true, 
