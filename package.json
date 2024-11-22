@@ -10,10 +10,20 @@
     "pretty:fix": "npx prettier --write src",
     "pretty": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\""
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "bike store",
+    "backend",
+    "CRUD",
+    "order management",
+    "express",
+    "typescript",
+    "mongoose",
+    "zod"
+  ],
+  "author": "Md. Nazim Uddin",
+  "email": "nazimmuddin10@gmail.com",
   "license": "ISC",
-  "description": "",
+  "description": "A backend solution for managing a bike store, including CRUD operations for bikes and handling orders. Built with Express, Mongoose, Zod for validation, and TypeScript for strong typing.",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
