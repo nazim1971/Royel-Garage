@@ -15,6 +15,28 @@ const createBike = (bikeData) => __awaiter(void 0, void 0, void 0, function* () 
     const result = yield bike_model_1.Bike.create(bikeData);
     return result;
 });
+const getAllBikeFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield bike_model_1.Bike.find({});
+    return result;
+});
+const getSingleBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield bike_model_1.Bike.findOne({ _id: id });
+    return result;
+});
+const updateSingleBikeInfo = (id, updatedData) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield bike_model_1.Bike.findByIdAndUpdate({ _id: id }, updatedData, {
+        new: true,
+    });
+    return result;
+});
+const deleteSingleBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield bike_model_1.Bike.findOneAndDelete({ _id: id });
+    return result;
+});
 exports.bikeService = {
-    createBike
+    createBike,
+    getAllBikeFromDB,
+    getSingleBikeFromDB,
+    updateSingleBikeInfo,
+    deleteSingleBikeFromDB
 };

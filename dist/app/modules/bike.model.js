@@ -7,18 +7,16 @@ const bikeSchema = new mongoose_1.Schema({
         type: String,
         trim: true,
         required: [true, 'Bike name is required'],
-        minlength: [2, 'Bike name must be at least 2 characters long'],
     },
     brand: {
         type: String,
         trim: true,
         required: [true, 'Brand name is required'],
-        minlength: [2, 'Brand name must be at least 2 characters long'],
     },
     price: {
         type: Number,
         required: [true, 'Bike price is required'],
-        min: [20, 'Bike price must be greater than 20$'],
+        min: [0, 'Bike price must be a positive value'],
     },
     category: {
         type: String,
@@ -38,7 +36,7 @@ const bikeSchema = new mongoose_1.Schema({
     isStock: {
         type: Boolean,
         required: [true, 'Stock status is required'],
-        default: true, // Default to true if not specified
+        default: true,
     },
 }, {
     timestamps: true,
