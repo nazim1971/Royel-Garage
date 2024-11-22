@@ -22,7 +22,8 @@ import { z } from 'zod';
   isStock: z
     .boolean()
     .default(true)
-});
+}).strict();
 
+const updateBikeValidationSchema = bikeValidationSchema.partial().strict()
 
-export {bikeValidationSchema};
+export {bikeValidationSchema,updateBikeValidationSchema};

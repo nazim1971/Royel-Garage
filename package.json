@@ -21,7 +21,7 @@
     "zod"
   ],
   "author": "Md. Nazim Uddin",
-  "email": "nazimmuddin10@gmail.com",
+  "email": "nazim12uddin@gmail.com",
   "license": "ISC",
   "description": "A backend solution for managing a bike store, including CRUD operations for bikes and handling orders. Built with Express, Mongoose, Zod for validation, and TypeScript for strong typing.",
   "dependencies": {
@@ -35,7 +35,7 @@
   "devDependencies": {
     "@eslint/js": "^9.15.0",
     "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
+    "@types/express": "^4.17.21",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.9.1",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
