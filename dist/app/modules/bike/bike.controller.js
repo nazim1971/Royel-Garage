@@ -12,33 +12,42 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BikeControllers = void 0;
 const bike_service_1 = require("./bike.service");
 const bike_zodValidation_1 = require("./bike.zodValidation");
-const error_pretty_1 = require("../error/error.pretty");
+//import { customErrorMsg } from '../../error/error.pretty';
 const createBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const bikeInfo = req.body;
         //Data validating using zod
-        const zodParseData = bike_zodValidation_1.bikeValidationSchema.parse(bikeInfo);
-        const result = yield bike_service_1.bikeService.createBike(zodParseData);
-        res.status(201).json({
+        //const zodParseData = bikeValidationSchema.parse(bikeInfo);
+        const result = yield bike_service_1.bikeService.createBike(bikeInfo);
+        return res.status(201).json({
             message: 'Bike created successfully',
             success: true,
             data: result,
         });
     }
     catch (err) {
-        const errMessage = (0, error_pretty_1.processErrorMsgs)(err);
+        //const errMessage = customErrorMsg(err);
         const error = err;
-        res.status(500).json({
-            message: errMessage,
+        return res.status(500).json({
+            message: 'Validation failed',
             success: false,
-            error: error.stack,
+            error: error,
+            stack: error.stack,
         });
     }
 });
 const getAllBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const result = yield bike_service_1.bikeService.getAllBikeFromDB();
-        res.status(200).json({
+        const { searchTerm } = req.query;
+        const result = yield bike_service_1.bikeService.getAllBikeFromDB(searchTerm);
+        if (result.length === 0) {
+            return res.status(404).json({
+                message: 'Not Bike Found',
+                status: false,
+                data: result,
+            });
+        }
+        return res.status(200).json({
             message: 'Bikes retrieved successfully',
             status: true,
             data: result,
@@ -46,7 +55,7 @@ const getAllBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     catch (err) {
         const error = err;
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message,
             success: false,
             error: error,
@@ -58,7 +67,14 @@ const getSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         //Received bike id as param
         const { bikeId } = req.params;
         const result = yield bike_service_1.bikeService.getSingleBikeFromDB(bikeId);
-        res.status(200).json({
+        if (!result) {
+            return res.status(404).json({
+                message: 'Bike not found',
+                status: false,
+                data: {},
+            });
+        }
+        return res.status(200).json({
             message: 'Bikes retrieved successfully',
             status: true,
             data: result,
@@ -66,7 +82,7 @@ const getSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
     catch (err) {
         const error = err;
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message,
             success: false,
             error: error,
@@ -86,7 +102,7 @@ const updateSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 success: false,
             });
         }
-        res.status(200).json({
+        return res.status(200).json({
             message: 'Bike updated successfully',
             success: true,
             data: updatedBike,
@@ -94,7 +110,7 @@ const updateSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (err) {
         const error = err;
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message,
             success: false,
             error: error,
@@ -113,7 +129,7 @@ const deleteSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 data: {},
             });
         }
-        res.status(200).json({
+        return res.status(200).json({
             message: 'Bike deleted successfully',
             status: true,
             data: {},
@@ -121,7 +137,7 @@ const deleteSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, functio
     }
     catch (err) {
         const error = err;
-        res.status(500).json({
+        return res.status(500).json({
             message: error.message,
             success: false,
             error: error,

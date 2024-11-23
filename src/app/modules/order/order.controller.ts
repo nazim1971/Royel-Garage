@@ -27,18 +27,22 @@ const createOrder = async (req: Request, res: Response) => {
     const totalPrice = bike!.price * quantity; // Assert bike is found
     bike!.quantity -= quantity; // Update quantity
     await bike!.save();
+    if (bike!.quantity === 0) {
+        bike!.isStock = false; // Mark the bike as out of stock
+      }
+      await bike!.save();
 
     const orderInfo = { email, product: bike!._id, quantity, totalPrice };
 
     const result = await orderService.createOrder(orderInfo);
-    res.status(201).json({
+   return res.status(201).json({
       message: 'Order created successfully',
       success: true,
       data: result,
     });
   } catch (err) {
     const error = err as Error;
-    res.status(500).json({
+   return res.status(500).json({
       message: 'Validation failed',
       success: false,
       error: error,
@@ -47,6 +51,28 @@ const createOrder = async (req: Request, res: Response) => {
   }
 };
 
+// Get total revenue
+const getTotalRevenueController = async (req: Request, res: Response) => {
+    try {
+      const totalRevenue = await orderService.getTotalRevenue(); // Call the service to get total revenue
+    return  res.status(200).json({
+        message: 'Revenue calculated successfully',
+        status: true,
+        data: {
+          totalRevenue, // Send the calculated revenue in the response
+        },
+      });
+    } catch (err) {
+        const error = err as Error;
+      return  res.status(500).json({
+          message: 'Error calculating revenue',
+          status: false,
+          error: error.message,
+        });
+      }
+  };
+
 export const orderController = {
   createOrder,
+  getTotalRevenueController
 };

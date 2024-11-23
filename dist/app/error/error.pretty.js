@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.processErrorMsgs = void 0;
+exports.customErrorMsg = void 0;
 const zod_1 = require("zod");
-const processErrorMsgs = (error) => {
+const customErrorMsg = (error) => {
     // Process Zod Validation Error(s)
     if (error instanceof zod_1.ZodError) {
         return error.errors
@@ -34,4 +34,4 @@ const processErrorMsgs = (error) => {
         return generalError.message;
     }
 };
-exports.processErrorMsgs = processErrorMsgs;
+exports.customErrorMsg = customErrorMsg;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { bikeService } from './bike.service';
 import {
- // bikeValidationSchema,
+  // bikeValidationSchema,
   updateBikeValidationSchema,
 } from './bike.zodValidation';
 //import { customErrorMsg } from '../../error/error.pretty';
@@ -14,7 +14,7 @@ const createBike = async (req: Request, res: Response) => {
     //const zodParseData = bikeValidationSchema.parse(bikeInfo);
 
     const result = await bikeService.createBike(bikeInfo);
-    res.status(201).json({
+    return res.status(201).json({
       message: 'Bike created successfully',
       success: true,
       data: result,
@@ -22,7 +22,7 @@ const createBike = async (req: Request, res: Response) => {
   } catch (err) {
     //const errMessage = customErrorMsg(err);
     const error = err as Error;
-    res.status(500).json({
+  return  res.status(500).json({
       message: 'Validation failed',
       success: false,
       error: error,
@@ -32,16 +32,27 @@ const createBike = async (req: Request, res: Response) => {
 };
 
 const getAllBike = async (req: Request, res: Response) => {
+  
   try {
-    const result = await bikeService.getAllBikeFromDB();
-    res.status(200).json({
+    const { searchTerm } = req.query;
+    const result = await bikeService.getAllBikeFromDB(searchTerm as string);
+    if(result.length === 0){
+    return  res.status(404).json({
+        message: 'Not Bike Found',
+        status: false,
+        data: result,
+      });
+    }
+   return res.status(200).json({
       message: 'Bikes retrieved successfully',
       status: true,
       data: result,
     });
+   
+
   } catch (err) {
     const error = err as Error;
-    res.status(500).json({
+  return  res.status(500).json({
       message: error.message,
       success: false,
       error: error,
@@ -63,14 +74,14 @@ const getSingleBike = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(200).json({
+  return  res.status(200).json({
       message: 'Bikes retrieved successfully',
       status: true,
       data: result,
     });
   } catch (err) {
     const error = err as Error;
-    res.status(500).json({
+  return  res.status(500).json({
       message: error.message,
       success: false,
       error: error,
@@ -95,14 +106,14 @@ const updateSingleBike = async (req: Request, res: Response) => {
         success: false,
       });
     }
-    res.status(200).json({
+   return res.status(200).json({
       message: 'Bike updated successfully',
       success: true,
       data: updatedBike,
     });
   } catch (err) {
     const error = err as Error;
-    res.status(500).json({
+   return res.status(500).json({
       message: error.message,
       success: false,
       error: error,
@@ -125,14 +136,14 @@ const deleteSingleBike = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(200).json({
+  return  res.status(200).json({
       message: 'Bike deleted successfully',
       status: true,
       data: {},
     });
   } catch (err) {
     const error = err as Error;
-    res.status(500).json({
+  return  res.status(500).json({
       message: error.message,
       success: false,
       error: error,

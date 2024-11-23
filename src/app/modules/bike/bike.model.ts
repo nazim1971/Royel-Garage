@@ -43,7 +43,7 @@ const bikeSchema = new Schema<Tbike >({
   timestamps: true, 
 });
 
-export const Bike = model<Tbike >('Bike', bikeSchema);
+export const Bike = model<Tbike >('bikes', bikeSchema);
 
 
 

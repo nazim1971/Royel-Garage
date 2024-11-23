@@ -41,4 +41,4 @@ const bikeSchema = new mongoose_1.Schema({
 }, {
     timestamps: true,
 });
-exports.Bike = (0, mongoose_1.model)('Bike', bikeSchema);
+exports.Bike = (0, mongoose_1.model)('bikes', bikeSchema);

@@ -33,4 +33,4 @@ const orderSchema = new Schema<Torder>(
 );
 
 // Export the Order model
-export const Order = model<Torder>('Order', orderSchema);
+export const Order = model<Torder>('Orders', orderSchema);
