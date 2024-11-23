@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { bikeRoutes } from './app/modules/bike.route';
+import { bikeRoutes } from './app/modules/bike/bike.route';
+import { orderRoutes } from './app/modules/order/order.route';
 
 const app = express();
 
@@ -10,12 +11,13 @@ app.use(cors());
 
 //Application Routes
 
-app.use('/', bikeRoutes)
+app.use('/', bikeRoutes);
+app.use('/', orderRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json({
     success: true,
-    message: 'Royel Grarage Server on Fire 🔥🔥🔥'
+    message: 'Royel Grarage Server on Fire 🔥🔥🔥',
   });
 });
 

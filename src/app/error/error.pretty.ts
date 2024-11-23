@@ -1,7 +1,7 @@
 import { ZodError } from 'zod';
 import { MongoError, ParserError } from './error.interface';
 
-export const processErrorMsgs = (error: unknown): string => {
+export const customErrorMsg = (error: unknown): string => {
   // Process Zod Validation Error(s)
   if (error instanceof ZodError) {
     return error.errors

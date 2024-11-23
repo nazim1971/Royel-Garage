@@ -12,7 +12,7 @@ const getAllBikeFromDB = async () => {
 };
 
 const getSingleBikeFromDB = async (id: string) => {
-  const result = await Bike.findOne({ _id: id });
+  const result = await Bike.findById({ _id: id });
   return result;
 };
 

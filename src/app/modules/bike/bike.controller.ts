@@ -1,31 +1,32 @@
 import { Request, Response } from 'express';
 import { bikeService } from './bike.service';
 import {
-  bikeValidationSchema,
+ // bikeValidationSchema,
   updateBikeValidationSchema,
 } from './bike.zodValidation';
-import { processErrorMsgs } from '../error/error.pretty';
+//import { customErrorMsg } from '../../error/error.pretty';
 
 const createBike = async (req: Request, res: Response) => {
   try {
     const bikeInfo = req.body;
 
     //Data validating using zod
-    const zodParseData = bikeValidationSchema.parse(bikeInfo);
+    //const zodParseData = bikeValidationSchema.parse(bikeInfo);
 
-    const result = await bikeService.createBike(zodParseData);
+    const result = await bikeService.createBike(bikeInfo);
     res.status(201).json({
       message: 'Bike created successfully',
       success: true,
       data: result,
     });
   } catch (err) {
-    const errMessage = processErrorMsgs(err);
+    //const errMessage = customErrorMsg(err);
     const error = err as Error;
     res.status(500).json({
-      message: errMessage,
+      message: 'Validation failed',
       success: false,
-      error: error.stack,
+      error: error,
+      stack: error.stack,
     });
   }
 };
@@ -54,6 +55,14 @@ const getSingleBike = async (req: Request, res: Response) => {
     const { bikeId } = req.params;
 
     const result = await bikeService.getSingleBikeFromDB(bikeId);
+    if (!result) {
+      return res.status(404).json({
+        message: 'Bike not found',
+        status: false,
+        data: {},
+      });
+    }
+
     res.status(200).json({
       message: 'Bikes retrieved successfully',
       status: true,
@@ -115,7 +124,7 @@ const deleteSingleBike = async (req: Request, res: Response) => {
         data: {},
       });
     }
-    
+
     res.status(200).json({
       message: 'Bike deleted successfully',
       status: true,
