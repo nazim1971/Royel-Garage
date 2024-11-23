@@ -12,7 +12,7 @@ const checkBikeAvailability = async (productId: string, quantity: number) => {
 };
 
 const createOrder = async (req: Request, res: Response) => {
-  const { email, product, quantity } = req.body;
+  const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
   try {
     // Check bike availability
     const availabilityError = await checkBikeAvailability(product, quantity);
@@ -24,7 +24,7 @@ const createOrder = async (req: Request, res: Response) => {
 
     // Proceed to create order
     const bike = await Bike.findOne({ _id: product });
-    const totalPrice = bike!.price * quantity; // Assert bike is found
+    const totalPrice =  orderTotalPrice || bike!.price * quantity; // Assert bike is found
     bike!.quantity -= quantity; // Update quantity
     await bike!.save();
     if (bike!.quantity === 0) {

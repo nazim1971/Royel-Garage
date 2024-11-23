@@ -23,7 +23,7 @@ const checkBikeAvailability = (productId, quantity) => __awaiter(void 0, void 0,
     return null;
 });
 const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, product, quantity } = req.body;
+    const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
     try {
         // Check bike availability
         const availabilityError = yield checkBikeAvailability(product, quantity);
@@ -34,7 +34,7 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
         // Proceed to create order
         const bike = yield bike_model_1.Bike.findOne({ _id: product });
-        const totalPrice = bike.price * quantity; // Assert bike is found
+        const totalPrice = orderTotalPrice || bike.price * quantity; // Assert bike is found
         bike.quantity -= quantity; // Update quantity
         yield bike.save();
         if (bike.quantity === 0) {
