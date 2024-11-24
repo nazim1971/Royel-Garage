@@ -17,7 +17,6 @@ const createBike = (bikeData) => __awaiter(void 0, void 0, void 0, function* () 
 });
 const getAllBikeFromDB = (searchTerm) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        // If no search term is provided, return all bikes
         let query = {};
         if (searchTerm) {
             // Search in name, brand, or category fields
@@ -44,6 +43,7 @@ const getSingleBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* 
 const updateSingleBikeInfo = (id, updatedData) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield bike_model_1.Bike.findByIdAndUpdate({ _id: id }, updatedData, {
         new: true,
+        runValidators: true,
     });
     return result;
 });

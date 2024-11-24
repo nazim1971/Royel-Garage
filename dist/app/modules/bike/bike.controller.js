@@ -11,13 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BikeControllers = void 0;
 const bike_service_1 = require("./bike.service");
-const bike_zodValidation_1 = require("./bike.zodValidation");
-//import { customErrorMsg } from '../../error/error.pretty';
-const createBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const createBike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const bikeInfo = req.body;
-        //Data validating using zod
-        //const zodParseData = bikeValidationSchema.parse(bikeInfo);
         const result = yield bike_service_1.bikeService.createBike(bikeInfo);
         return res.status(201).json({
             message: 'Bike created successfully',
@@ -26,17 +22,10 @@ const createBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (err) {
-        //const errMessage = customErrorMsg(err);
-        const error = err;
-        return res.status(500).json({
-            message: 'Validation failed',
-            success: false,
-            error: error,
-            stack: error.stack,
-        });
+        next(err);
     }
 });
-const getAllBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllBike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { searchTerm } = req.query;
         const result = yield bike_service_1.bikeService.getAllBikeFromDB(searchTerm);
@@ -54,17 +43,11 @@ const getAllBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         });
     }
     catch (err) {
-        const error = err;
-        return res.status(500).json({
-            message: error.message,
-            success: false,
-            error: error,
-        });
+        next(err);
     }
 });
 const getSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        //Received bike id as param
         const { bikeId } = req.params;
         const result = yield bike_service_1.bikeService.getSingleBikeFromDB(bikeId);
         if (!result) {
@@ -89,13 +72,14 @@ const getSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
 });
-const updateSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateSingleBike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { bikeId } = req.params;
         const updatedBikeData = req.body;
-        //Data validating using zod
-        const zodParseData = bike_zodValidation_1.updateBikeValidationSchema.parse(updatedBikeData);
-        const updatedBike = yield bike_service_1.bikeService.updateSingleBikeInfo(bikeId, zodParseData);
+        if (updatedBikeData.quantity === 0) {
+            updatedBikeData.isStock = false;
+        }
+        const updatedBike = yield bike_service_1.bikeService.updateSingleBikeInfo(bikeId, updatedBikeData);
         if (!updatedBike) {
             return res.status(404).json({
                 message: 'Bike not found',
@@ -109,15 +93,10 @@ const updateSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
     catch (err) {
-        const error = err;
-        return res.status(500).json({
-            message: error.message,
-            success: false,
-            error: error,
-        });
+        next(err);
     }
 });
-const deleteSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteSingleBike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //Received bike id as param
         const { bikeId } = req.params;
@@ -136,12 +115,7 @@ const deleteSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, functio
         });
     }
     catch (err) {
-        const error = err;
-        return res.status(500).json({
-            message: error.message,
-            success: false,
-            error: error,
-        });
+        next(err);
     }
 });
 exports.BikeControllers = {

@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { orderService } from './order.service';
 import { Bike } from '../bike/bike.model';
 import mongoose from 'mongoose';
 import { checkBikeAvailability } from '../../utilities/order/checkBikeAbility';
 
 // Main function to handle order creation
-const createOrder = async (req: Request, res: Response) => {
+const createOrder = async (req: Request, res: Response, next: NextFunction) => {
  
 
   try {
@@ -18,7 +18,6 @@ const createOrder = async (req: Request, res: Response) => {
         .json({ message: availabilityError, success: false });
     }
 
-    // Fetch bike details using aggregation to calculate total price
     const [bike] = await Bike.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(product) } },
       {
@@ -31,28 +30,14 @@ const createOrder = async (req: Request, res: Response) => {
       },
     ]);
 
-    if (!bike) {
-      return res
-        .status(404)
-        .json({ message: 'Bike not found', success: false });
-    }
-
     const totalPrice = orderTotalPrice || bike.totalPrice;
-
-    if (bike.quantity < quantity) {
-      return res.status(400).json({
-        message: `Only ${bike.quantity} bikes available`,
-        success: false,
-      });
-    }
 
     // Update bike quantity and stock status
     const updatedQuantity = bike.quantity - quantity;
-    const isStock = updatedQuantity > 0;
 
     await Bike.updateOne(
       { _id: product },
-      { $set: { quantity: updatedQuantity, isStock } },
+      { $set: { quantity: updatedQuantity, isStock: updatedQuantity > 0 } },
     );
 
     // Prepare and create the order
@@ -65,38 +50,27 @@ const createOrder = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    const error = err as Error;
-    return res.status(500).json({
-      message: 'Order creation failed',
-      success: false,
-      error: error.message,
-      stack: error.stack,
-    });
+   next(err)
   }
 };
 
 // Get total revenue
-const getTotalRevenueController = async (req: Request, res: Response) => {
+const getTotalRevenueController = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const totalRevenue = await orderService.getTotalRevenue(); // Call the service to get total revenue
+    const totalRevenue = await orderService.getTotalRevenue(); 
     return res.status(200).json({
       message: 'Revenue calculated successfully',
       status: true,
       data: {
-        totalRevenue, // Send the calculated revenue in the response
+        totalRevenue, 
       },
     });
   } catch (err) {
-    const error = err as Error;
-    return res.status(500).json({
-      message: 'Error calculating revenue',
-      status: false,
-      error: error.message,
-    });
-  }
+    next(err)
+   }
 };
 
-const getAllOrder = async (req: Request, res: Response) => {
+const getAllOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await orderService.getAllOrderFromDB();
     if (result.length === 0) {
@@ -112,13 +86,8 @@ const getAllOrder = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    const error = err as Error;
-    return res.status(500).json({
-      message: error.message,
-      success: false,
-      error: error,
-    });
-  }
+    next(err)
+   }
 };
 
 export const orderController = {

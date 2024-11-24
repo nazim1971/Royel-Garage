@@ -38,6 +38,7 @@ const updateSingleBikeInfo = async (
 ) => {
   const result = await Bike.findByIdAndUpdate({ _id: id }, updatedData, {
     new: true,
+    runValidators: true,
   });
 
   return result;

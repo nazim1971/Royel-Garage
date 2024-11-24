@@ -8,39 +8,42 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.orderController = void 0;
 const order_service_1 = require("./order.service");
 const bike_model_1 = require("../bike/bike.model");
-const checkBikeAvailability = (productId, quantity) => __awaiter(void 0, void 0, void 0, function* () {
-    const bike = yield bike_model_1.Bike.findOne({ _id: productId });
-    if (!bike)
-        return 'The bike does not exist.';
-    if (!bike.isStock)
-        return 'The bike is out of stock.';
-    if (bike.quantity < quantity || bike.quantity === 0)
-        return `Insufficient stock. Only ${bike.quantity} items are available.`;
-    return null;
-});
-const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
+const mongoose_1 = __importDefault(require("mongoose"));
+const checkBikeAbility_1 = require("../../utilities/order/checkBikeAbility");
+// Main function to handle order creation
+const createOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
+        const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
         // Check bike availability
-        const availabilityError = yield checkBikeAvailability(product, quantity);
+        const availabilityError = yield (0, checkBikeAbility_1.checkBikeAvailability)(product, quantity);
         if (availabilityError) {
             return res
                 .status(404)
                 .json({ message: availabilityError, success: false });
         }
-        // Proceed to create order
-        const bike = yield bike_model_1.Bike.findOne({ _id: product });
-        const totalPrice = orderTotalPrice || bike.price * quantity; // Assert bike is found
-        bike.quantity -= quantity; // Update quantity
-        yield bike.save();
-        if (bike.quantity === 0) {
-            bike.isStock = false; // Mark the bike as out of stock
-        }
-        yield bike.save();
+        const [bike] = yield bike_model_1.Bike.aggregate([
+            { $match: { _id: new mongoose_1.default.Types.ObjectId(product) } },
+            {
+                $project: {
+                    price: 1,
+                    quantity: 1,
+                    isStock: 1,
+                    totalPrice: { $multiply: ['$price', quantity] },
+                },
+            },
+        ]);
+        const totalPrice = orderTotalPrice || bike.totalPrice;
+        // Update bike quantity and stock status
+        const updatedQuantity = bike.quantity - quantity;
+        yield bike_model_1.Bike.updateOne({ _id: product }, { $set: { quantity: updatedQuantity, isStock: updatedQuantity > 0 } });
+        // Prepare and create the order
         const orderInfo = { email, product: bike._id, quantity, totalPrice };
         const result = yield order_service_1.orderService.createOrder(orderInfo);
         return res.status(201).json({
@@ -50,37 +53,47 @@ const createOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
     catch (err) {
-        const error = err;
-        return res.status(500).json({
-            message: 'Validation failed',
-            success: false,
-            error: error,
-            stack: error.stack,
-        });
+        next(err);
     }
 });
 // Get total revenue
-const getTotalRevenueController = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getTotalRevenueController = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const totalRevenue = yield order_service_1.orderService.getTotalRevenue(); // Call the service to get total revenue
+        const totalRevenue = yield order_service_1.orderService.getTotalRevenue();
         return res.status(200).json({
             message: 'Revenue calculated successfully',
             status: true,
             data: {
-                totalRevenue, // Send the calculated revenue in the response
+                totalRevenue,
             },
         });
     }
     catch (err) {
-        const error = err;
-        return res.status(500).json({
-            message: 'Error calculating revenue',
-            status: false,
-            error: error.message,
+        next(err);
+    }
+});
+const getAllOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const result = yield order_service_1.orderService.getAllOrderFromDB();
+        if (result.length === 0) {
+            return res.status(404).json({
+                message: 'Not Order Found',
+                status: false,
+                data: result,
+            });
+        }
+        return res.status(200).json({
+            message: 'Orders retrieved successfully',
+            status: true,
+            data: result,
         });
+    }
+    catch (err) {
+        next(err);
     }
 });
 exports.orderController = {
     createOrder,
-    getTotalRevenueController
+    getTotalRevenueController,
+    getAllOrder,
 };

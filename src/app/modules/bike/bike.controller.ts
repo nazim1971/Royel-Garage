@@ -1,18 +1,13 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { bikeService } from './bike.service';
 import {
   // bikeValidationSchema,
   updateBikeValidationSchema,
 } from './bike.zodValidation';
-//import { customErrorMsg } from '../../error/error.pretty';
 
-const createBike = async (req: Request, res: Response) => {
+const createBike = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const bikeInfo = req.body;
-
-    //Data validating using zod
-    //const zodParseData = bikeValidationSchema.parse(bikeInfo);
-
     const result = await bikeService.createBike(bikeInfo);
     return res.status(201).json({
       message: 'Bike created successfully',
@@ -20,18 +15,12 @@ const createBike = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    //const errMessage = customErrorMsg(err);
-    const error = err as Error;
-  return  res.status(500).json({
-      message: 'Validation failed',
-      success: false,
-      error: error,
-      stack: error.stack,
-    });
+    next(err)
   }
+  
 };
 
-const getAllBike = async (req: Request, res: Response) => {
+const getAllBike = async (req: Request, res: Response, next: NextFunction) => {
   
   try {
     const { searchTerm } = req.query;
@@ -51,12 +40,7 @@ const getAllBike = async (req: Request, res: Response) => {
    
 
   } catch (err) {
-    const error = err as Error;
-  return  res.status(500).json({
-      message: error.message,
-      success: false,
-      error: error,
-    });
+    next(err)
   }
 };
 
@@ -88,16 +72,17 @@ const getSingleBike = async (req: Request, res: Response) => {
   }
 };
 
-const updateSingleBike = async (req: Request, res: Response) => {
+const updateSingleBike = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bikeId } = req.params;
     const updatedBikeData = req.body;
-    //Data validating using zod
-    const zodParseData = updateBikeValidationSchema.parse(updatedBikeData);
+    if (updatedBikeData.quantity === 0) {
+      updatedBikeData.isStock = false;
+    }
 
     const updatedBike = await bikeService.updateSingleBikeInfo(
       bikeId,
-      zodParseData,
+      updatedBikeData,
     );
     if (!updatedBike) {
       return res.status(404).json({
@@ -111,16 +96,11 @@ const updateSingleBike = async (req: Request, res: Response) => {
       data: updatedBike,
     });
   } catch (err) {
-    const error = err as Error;
-   return res.status(500).json({
-      message: error.message,
-      success: false,
-      error: error,
-    });
+    next(err)
   }
 };
 
-const deleteSingleBike = async (req: Request, res: Response) => {
+const deleteSingleBike = async (req: Request, res: Response, next: NextFunction) => {
   try {
     //Received bike id as param
     const { bikeId } = req.params;
@@ -141,12 +121,7 @@ const deleteSingleBike = async (req: Request, res: Response) => {
       data: {},
     });
   } catch (err) {
-    const error = err as Error;
-  return  res.status(500).json({
-      message: error.message,
-      success: false,
-      error: error,
-    });
+    next(err)
   }
 };
 
