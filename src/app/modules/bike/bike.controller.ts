@@ -1,9 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { bikeService } from './bike.service';
-import {
-  // bikeValidationSchema,
-  updateBikeValidationSchema,
-} from './bike.zodValidation';
 
 const createBike = async (req: Request, res: Response, next: NextFunction) => {
   try {

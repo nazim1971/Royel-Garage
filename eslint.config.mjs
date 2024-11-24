@@ -41,4 +41,4 @@ export default [
   ...tseslint.configs.recommended,
 
   eslintConfigPrettier,
-];
+]; 
