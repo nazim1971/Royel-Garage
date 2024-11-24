@@ -40,7 +40,7 @@ const getAllBike = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const getSingleBike = async (req: Request, res: Response) => {
+const getSingleBike = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bikeId } = req.params;
 
@@ -59,12 +59,7 @@ const getSingleBike = async (req: Request, res: Response) => {
       data: result,
     });
   } catch (err) {
-    const error = err as Error;
-  return  res.status(500).json({
-      message: error.message,
-      success: false,
-      error: error,
-    });
+    next(err)
   }
 };
 
@@ -74,6 +69,8 @@ const updateSingleBike = async (req: Request, res: Response, next: NextFunction)
     const updatedBikeData = req.body;
     if (updatedBikeData.quantity === 0) {
       updatedBikeData.isStock = false;
+    } else{
+      updatedBikeData.isStock = true;
     }
 
     const updatedBike = await bikeService.updateSingleBikeInfo(

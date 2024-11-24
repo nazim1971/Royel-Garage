@@ -46,7 +46,7 @@ const getAllBike = (req, res, next) => __awaiter(void 0, void 0, void 0, functio
         next(err);
     }
 });
-const getSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getSingleBike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { bikeId } = req.params;
         const result = yield bike_service_1.bikeService.getSingleBikeFromDB(bikeId);
@@ -64,12 +64,7 @@ const getSingleBike = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         });
     }
     catch (err) {
-        const error = err;
-        return res.status(500).json({
-            message: error.message,
-            success: false,
-            error: error,
-        });
+        next(err);
     }
 });
 const updateSingleBike = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -78,6 +73,9 @@ const updateSingleBike = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const updatedBikeData = req.body;
         if (updatedBikeData.quantity === 0) {
             updatedBikeData.isStock = false;
+        }
+        else {
+            updatedBikeData.isStock = true;
         }
         const updatedBike = yield bike_service_1.bikeService.updateSingleBikeInfo(bikeId, updatedBikeData);
         if (!updatedBike) {
