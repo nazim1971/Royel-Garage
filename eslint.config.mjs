@@ -5,12 +5,10 @@ import eslintConfigPrettier from 'eslint-config-prettier';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  // Target files to lint
   {
     files: ['**/*.{js,mjs,cjs,ts}'],
   },
 
-  // Global settings for the environment
   {
     languageOptions: {
       globals: {
@@ -20,7 +18,6 @@ export default [
     },
   },
 
-  // Ignored directories and files
   {
     ignores: ['.node_modules/*', '.dist'],
   },
@@ -28,9 +25,9 @@ export default [
   // ESLint rules
   {
     rules: {
-      eqeqeq: 'off', // Disable strict equality checks
-      'no-unused-vars': 'error', // Report unused variables
-      'prefer-const': ['error', { ignoreReadBeforeAssign: true }], // Enforce using const when possible
+      eqeqeq: 'off', 
+      'no-unused-vars': 'error', 
+      'prefer-const': ['error', { ignoreReadBeforeAssign: true }], 
       '@typescript-eslint/no-unused-expressions': [
         'error',
         { allowShortCircuit: true, allowTernary: true },

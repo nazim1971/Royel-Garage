@@ -1,8 +1,3 @@
-import { Request, Response } from 'express';
-import { orderService } from './order.service';
-import { Bike } from '../bike/bike.model';
-import mongoose from 'mongoose';
-
 // Utility function to check bike availability
 const checkBikeAvailability = async (productId: string, quantity: number) => {
   const bike = await Bike.findOne({ _id: productId });
@@ -12,7 +7,7 @@ const checkBikeAvailability = async (productId: string, quantity: number) => {
   if (bike.quantity < quantity) 
     return `Insufficient stock. Only ${bike.quantity} items are available.`;
 
-  return null; 
+  return null; // No errors, the bike is available
 };
 
 // Main function to handle order creation
@@ -28,12 +23,12 @@ const createOrder = async (req: Request, res: Response) => {
 
     // Fetch bike details using aggregation to calculate total price
     const [bike] = await Bike.aggregate([
-      { $match: { _id: new mongoose.Types.ObjectId(product) } }, 
+      { $match: { _id: new mongoose.Types.ObjectId(product) } }, // Match bike by product ID
       { $project: {
           price: 1,
           quantity: 1,
           isStock: 1,
-          totalPrice: { $multiply: ["$price", quantity] }, 
+          totalPrice: { $multiply: ["$price", quantity] }, // Calculate total price
       }},
     ]);
 
@@ -41,8 +36,10 @@ const createOrder = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Bike not found', success: false });
     }
 
+    // Determine the total price (from request or calculated)
     const totalPrice = orderTotalPrice || bike.totalPrice;
 
+    // Check if there is enough stock
     if (bike.quantity < quantity) {
       return res.status(400).json({
         message: `Only ${bike.quantity} bikes available`,
@@ -63,7 +60,7 @@ const createOrder = async (req: Request, res: Response) => {
     const orderInfo = { email, product: bike._id, quantity, totalPrice };
     const result = await orderService.createOrder(orderInfo);
 
-
+    // Respond with success
     return res.status(201).json({
       message: 'Order created successfully',
       success: true,
@@ -71,6 +68,8 @@ const createOrder = async (req: Request, res: Response) => {
     });
   } catch (err) {
     const error = err as Error;
+
+    // Handle any unexpected errors
     return res.status(500).json({
       message: 'Order creation failed',
       success: false,
@@ -78,63 +77,4 @@ const createOrder = async (req: Request, res: Response) => {
       stack: error.stack,
     });
   }
-};
-
-
-// Get total revenue
-const getTotalRevenueController = async (req: Request, res: Response) => {
-    try {
-      const totalRevenue = await orderService.getTotalRevenue(); // Call the service to get total revenue
-    return  res.status(200).json({
-        message: 'Revenue calculated successfully',
-        status: true,
-        data: {
-          totalRevenue, // Send the calculated revenue in the response
-        },
-      });
-    } catch (err) {
-        const error = err as Error;
-      return  res.status(500).json({
-          message: 'Error calculating revenue',
-          status: false,
-          error: error.message,
-        });
-      }
-  };
-
-
-  const getAllOrder = async (req: Request, res: Response) => {
-  
-    try {
-      
-      const result = await orderService.getAllOrderFromDB();
-      if(result.length === 0){
-      return  res.status(404).json({
-          message: 'Not Order Found',
-          status: false,
-          data: result,
-        });
-      }
-     return res.status(200).json({
-        message: 'Orders retrieved successfully',
-        status: true,
-        data: result,
-      });
-     
-  
-    } catch (err) {
-      const error = err as Error;
-    return  res.status(500).json({
-        message: error.message,
-        success: false,
-        error: error,
-      });
-    }
-  };
-
-
-export const orderController = {
-  createOrder,
-  getTotalRevenueController,
-  getAllOrder
 };
