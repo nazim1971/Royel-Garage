@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
 import { ValidationErrorResponse } from "./error.interface";
+import { ValidationTypeError } from "../modules/bike/bike.model";
 
 
 export const handleErrors = (
@@ -21,6 +22,19 @@ export const handleErrors = (
       stack: err.stack, 
     } as ValidationErrorResponse); 
   }
+
+    // Handle custom ValidationTypeError
+    if (err instanceof ValidationTypeError) {
+      return res.status(400).json({
+        message: "Validation failed",
+        success: false,
+        error: {
+          name: err.name,
+          message: err.errors,
+        },
+        stack: err.stack,
+      });
+    }
 
   // If it's a different kind of known error, handle it
   if (err instanceof Error) {

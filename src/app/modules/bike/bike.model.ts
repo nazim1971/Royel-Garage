@@ -2,12 +2,33 @@ import { model, Schema } from 'mongoose';
 import { Tbike } from './bike.interface';
 
 
+export class ValidationTypeError extends Error {
+  errors: any;
+
+  constructor(errors: any) {
+    super("Validation failed");
+    this.name = "ValidationTypeError"; // Set a unique error name
+    this.errors = errors;  // Store the Mongoose error details
+  }
+}
+
+// Updated validateType function that uses Mongoose's error details
 function validateType(value: any, expectedType: string) {
   if (typeof value !== expectedType) {
-    throw new Error(`Value must be a ${expectedType}`);
+    // Create a Mongoose-like error object
+    const error = {
+      message: `Value must be a ${expectedType}`,
+      path: '', // Optionally, specify the path if needed
+      value: value,
+      kind: expectedType,
+    };
+
+    // Throw the custom error with full error object
+    throw new ValidationTypeError(error);
   }
   return value;
 }
+
 
 const bikeSchema = new Schema<Tbike>({
   name: {
