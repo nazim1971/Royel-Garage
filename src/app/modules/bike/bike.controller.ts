@@ -68,9 +68,9 @@ const updateSingleBike = async (req: Request, res: Response, next: NextFunction)
     const { bikeId } = req.params;
     const updatedBikeData = req.body;
     if (updatedBikeData.quantity === 0) {
-      updatedBikeData.isStock = false;
+      updatedBikeData.inStock = false;
     } else{
-      updatedBikeData.isStock = true;
+      updatedBikeData.inStock = true;
     }
 
     const updatedBike = await bikeService.updateSingleBikeInfo(

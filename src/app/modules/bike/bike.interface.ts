@@ -5,5 +5,5 @@ export type Tbike = {
   category: 'Mountain' | 'Road' | 'Hybrid' | 'Electric';
   description: string;
   quantity: number;
-  isStock: boolean;
+  inStock: boolean;
 };

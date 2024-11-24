@@ -37,7 +37,7 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
 
     await Bike.updateOne(
       { _id: product },
-      { $set: { quantity: updatedQuantity, isStock: updatedQuantity > 0 } },
+      { $set: { quantity: updatedQuantity, inStock: updatedQuantity > 0 } },
     );
 
     const orderInfo = { email, product: bike._id, quantity, totalPrice };

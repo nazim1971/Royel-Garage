@@ -15,7 +15,7 @@ const checkBikeAvailability = (productId, quantity) => __awaiter(void 0, void 0,
     const bike = yield bike_model_1.Bike.findOne({ _id: productId });
     if (!bike)
         return 'The bike does not exist.';
-    if (!bike.isStock)
+    if (!bike.inStock)
         return 'The bike is out of stock.';
     if (bike.quantity < quantity)
         return `Insufficient stock. Only ${bike.quantity} items are available.`;

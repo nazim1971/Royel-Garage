@@ -42,7 +42,7 @@ const createOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         const totalPrice = orderTotalPrice || bike.totalPrice;
         // Update bike quantity and stock status
         const updatedQuantity = bike.quantity - quantity;
-        yield bike_model_1.Bike.updateOne({ _id: product }, { $set: { quantity: updatedQuantity, isStock: updatedQuantity > 0 } });
+        yield bike_model_1.Bike.updateOne({ _id: product }, { $set: { quantity: updatedQuantity, inStock: updatedQuantity > 0 } });
         const orderInfo = { email, product: bike._id, quantity, totalPrice };
         const result = yield order_service_1.orderService.createOrder(orderInfo);
         return res.status(201).json({

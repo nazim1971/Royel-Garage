@@ -72,10 +72,10 @@ const updateSingleBike = (req, res, next) => __awaiter(void 0, void 0, void 0, f
         const { bikeId } = req.params;
         const updatedBikeData = req.body;
         if (updatedBikeData.quantity === 0) {
-            updatedBikeData.isStock = false;
+            updatedBikeData.inStock = false;
         }
         else {
-            updatedBikeData.isStock = true;
+            updatedBikeData.inStock = true;
         }
         const updatedBike = yield bike_service_1.bikeService.updateSingleBikeInfo(bikeId, updatedBikeData);
         if (!updatedBike) {
