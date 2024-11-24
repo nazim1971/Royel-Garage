@@ -5,22 +5,20 @@ const mongoose_1 = require("mongoose");
 class ValidationTypeError extends Error {
     constructor(errors) {
         super("Validation failed");
-        this.name = "ValidationTypeError"; // Set a unique error name
-        this.errors = errors; // Store the Mongoose error details
+        this.name = "ValidationTypeError";
+        this.errors = errors;
     }
 }
 exports.ValidationTypeError = ValidationTypeError;
 // Updated validateType function that uses Mongoose's error details
 function validateType(value, expectedType) {
     if (typeof value !== expectedType) {
-        // Create a Mongoose-like error object
         const error = {
             message: `Value must be a ${expectedType}`,
-            path: '', // Optionally, specify the path if needed
+            path: '',
             value: value,
             kind: expectedType,
         };
-        // Throw the custom error with full error object
         throw new ValidationTypeError(error);
     }
     return value;
