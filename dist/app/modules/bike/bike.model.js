@@ -2,16 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bike = void 0;
 const mongoose_1 = require("mongoose");
+function validateType(value, expectedType) {
+    if (typeof value !== expectedType) {
+        throw new Error(`Value must be a ${expectedType}`);
+    }
+    return value;
+}
 const bikeSchema = new mongoose_1.Schema({
     name: {
         type: String,
         trim: true,
         required: [true, 'Bike name is required'],
+        set: (value) => validateType(value, 'string'),
     },
     brand: {
         type: String,
         trim: true,
         required: [true, 'Brand name is required'],
+        set: (value) => validateType(value, 'string'),
     },
     price: {
         type: Number,
@@ -27,6 +35,7 @@ const bikeSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'Bike description is required'],
         minlength: [10, 'Description must be at least 10 characters long'],
+        set: (value) => validateType(value, 'string'),
     },
     quantity: {
         type: Number,
@@ -36,9 +45,8 @@ const bikeSchema = new mongoose_1.Schema({
     isStock: {
         type: Boolean,
         required: [true, 'Stock status is required'],
-        default: true,
     },
 }, {
-    timestamps: true,
+    timestamps: true
 });
 exports.Bike = (0, mongoose_1.model)('bikes', bikeSchema);

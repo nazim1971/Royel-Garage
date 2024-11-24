@@ -17,57 +17,45 @@ const createOrder = (orderData) => __awaiter(void 0, void 0, void 0, function* (
 });
 // Calculate the total revenue
 const getTotalRevenue = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield order_model_1.Order.aggregate([
-            {
-                $lookup: {
-                    from: 'bikes',
-                    localField: 'product',
-                    foreignField: '_id',
-                    as: 'bikeData',
-                },
+    const result = yield order_model_1.Order.aggregate([
+        {
+            $lookup: {
+                from: 'bikes',
+                localField: 'product',
+                foreignField: '_id',
+                as: 'bikeData',
             },
-            {
-                $unwind: {
-                    path: '$bikeData',
-                    preserveNullAndEmptyArrays: false,
-                },
+        },
+        {
+            $unwind: {
+                path: '$bikeData',
+                preserveNullAndEmptyArrays: false,
             },
-            {
-                $addFields: {
-                    totalPrice: { $multiply: ['$bikeData.price', '$quantity'] },
-                },
+        },
+        {
+            $addFields: {
+                totalPrice: { $multiply: ['$bikeData.price', '$quantity'] },
             },
-            {
-                $group: {
-                    _id: null,
-                    totalRevenue: { $sum: '$totalPrice' },
-                },
+        },
+        {
+            $group: {
+                _id: null,
+                totalRevenue: { $sum: '$totalPrice' },
             },
-            {
-                $project: {
-                    _id: 0,
-                    totalRevenue: 1,
-                },
+        },
+        {
+            $project: {
+                _id: 0,
+                totalRevenue: 1,
             },
-        ]);
-        const totalRevenue = result.length > 0 ? result[0].totalRevenue : 0;
-        return totalRevenue;
-    }
-    catch (err) {
-        const error = err;
-        throw new Error('Error calculating revenue: ' + error.message);
-    }
+        },
+    ]);
+    const totalRevenue = result.length > 0 ? result[0].totalRevenue : 0;
+    return totalRevenue;
 });
 const getAllOrderFromDB = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const result = yield order_model_1.Order.find();
-        return result;
-    }
-    catch (err) {
-        const error = err;
-        throw new Error(error.message);
-    }
+    const result = yield order_model_1.Order.find();
+    return result;
 });
 exports.orderService = {
     createOrder,

@@ -17,7 +17,7 @@ const order_service_1 = require("./order.service");
 const bike_model_1 = require("../bike/bike.model");
 const mongoose_1 = __importDefault(require("mongoose"));
 const checkBikeAbility_1 = require("../../utilities/order/checkBikeAbility");
-// Main function to handle order creation
+// Make order 
 const createOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
@@ -43,7 +43,6 @@ const createOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, functi
         // Update bike quantity and stock status
         const updatedQuantity = bike.quantity - quantity;
         yield bike_model_1.Bike.updateOne({ _id: product }, { $set: { quantity: updatedQuantity, isStock: updatedQuantity > 0 } });
-        // Prepare and create the order
         const orderInfo = { email, product: bike._id, quantity, totalPrice };
         const result = yield order_service_1.orderService.createOrder(orderInfo);
         return res.status(201).json({
@@ -72,6 +71,7 @@ const getTotalRevenueController = (req, res, next) => __awaiter(void 0, void 0, 
         next(err);
     }
 });
+//Get All Order data
 const getAllOrder = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const result = yield order_service_1.orderService.getAllOrderFromDB();

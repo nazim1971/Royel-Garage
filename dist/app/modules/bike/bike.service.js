@@ -16,25 +16,19 @@ const createBike = (bikeData) => __awaiter(void 0, void 0, void 0, function* () 
     return result;
 });
 const getAllBikeFromDB = (searchTerm) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        let query = {};
-        if (searchTerm) {
-            // Search in name, brand, or category fields
-            query = {
-                $or: [
-                    { name: { $regex: searchTerm, $options: 'i' } },
-                    { brand: { $regex: searchTerm, $options: 'i' } },
-                    { category: { $regex: searchTerm, $options: 'i' } },
-                ],
-            };
-        }
-        const result = yield bike_model_1.Bike.find(query);
-        return result;
+    let query = {};
+    if (searchTerm) {
+        // Search in name, brand, or category fields
+        query = {
+            $or: [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { brand: { $regex: searchTerm, $options: 'i' } },
+                { category: { $regex: searchTerm, $options: 'i' } },
+            ],
+        };
     }
-    catch (err) {
-        const error = err;
-        throw new Error(error.message);
-    }
+    const result = yield bike_model_1.Bike.find(query);
+    return result;
 });
 const getSingleBikeFromDB = (id) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield bike_model_1.Bike.findById({ _id: id });

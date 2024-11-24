@@ -4,7 +4,7 @@ import { Bike } from '../bike/bike.model';
 import mongoose from 'mongoose';
 import { checkBikeAvailability } from '../../utilities/order/checkBikeAbility';
 
-// Main function to handle order creation
+// Make order 
 const createOrder = async (req: Request, res: Response, next: NextFunction) => {
  
 
@@ -40,7 +40,6 @@ const createOrder = async (req: Request, res: Response, next: NextFunction) => {
       { $set: { quantity: updatedQuantity, isStock: updatedQuantity > 0 } },
     );
 
-    // Prepare and create the order
     const orderInfo = { email, product: bike._id, quantity, totalPrice };
     const result = await orderService.createOrder(orderInfo);
 
@@ -70,6 +69,7 @@ const getTotalRevenueController = async (req: Request, res: Response, next: Next
    }
 };
 
+//Get All Order data
 const getAllOrder = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const result = await orderService.getAllOrderFromDB();

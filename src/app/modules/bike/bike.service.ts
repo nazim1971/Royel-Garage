@@ -7,8 +7,7 @@ const createBike = async (bikeData: Tbike) => {
 };
 
 const getAllBikeFromDB = async (searchTerm?: string) => {
-  try {
-    let query = {};
+  let query = {};
     if (searchTerm) {
       // Search in name, brand, or category fields
       query = {
@@ -21,10 +20,6 @@ const getAllBikeFromDB = async (searchTerm?: string) => {
     }
     const result = await Bike.find(query);
     return result;
-  } catch (err) {
-    const error = err as Error;
-    throw new Error(error.message);
-  }
 };
 
 const getSingleBikeFromDB = async (id: string) => {
