@@ -27,7 +27,7 @@
 
 ### Step 1: Clone the Repository
 ```bash
-git clone <https://github.com/nazim1971/Royel-Garage.git>
+git clone https://github.com/nazim1971/Royel-Garage.git
 ```
 
 ### Step 2: Create `.env` File
@@ -40,7 +40,7 @@ DATABASE_URI=your_mongo_db_connection_uri  # MongoDB Atlas URI
 ### Step 3: Install Dependencies
 Navigate to your project directory and install the necessary dependencies:
 ```bash
-cd <your-project-folder>
+cd your-project-folder
 npm install
 ```
 
