@@ -2,43 +2,39 @@ import { Request, Response } from 'express';
 import { orderService } from './order.service';
 import { Bike } from '../bike/bike.model';
 import mongoose from 'mongoose';
-
-// Utility function to check bike availability
-const checkBikeAvailability = async (productId: string, quantity: number) => {
-  const bike = await Bike.findOne({ _id: productId });
-
-  if (!bike) return 'The bike does not exist.';
-  if (!bike.isStock) return 'The bike is out of stock.';
-  if (bike.quantity < quantity) 
-    return `Insufficient stock. Only ${bike.quantity} items are available.`;
-
-  return null; 
-};
+import { checkBikeAvailability } from '../../utilities/order/checkBikeAbility';
 
 // Main function to handle order creation
 const createOrder = async (req: Request, res: Response) => {
-  const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
+ 
 
   try {
+    const { email, product, quantity, totalPrice: orderTotalPrice } = req.body;
     // Check bike availability
     const availabilityError = await checkBikeAvailability(product, quantity);
     if (availabilityError) {
-      return res.status(404).json({ message: availabilityError, success: false });
+      return res
+        .status(404)
+        .json({ message: availabilityError, success: false });
     }
 
     // Fetch bike details using aggregation to calculate total price
     const [bike] = await Bike.aggregate([
-      { $match: { _id: new mongoose.Types.ObjectId(product) } }, 
-      { $project: {
+      { $match: { _id: new mongoose.Types.ObjectId(product) } },
+      {
+        $project: {
           price: 1,
           quantity: 1,
           isStock: 1,
-          totalPrice: { $multiply: ["$price", quantity] }, 
-      }},
+          totalPrice: { $multiply: ['$price', quantity] },
+        },
+      },
     ]);
 
     if (!bike) {
-      return res.status(404).json({ message: 'Bike not found', success: false });
+      return res
+        .status(404)
+        .json({ message: 'Bike not found', success: false });
     }
 
     const totalPrice = orderTotalPrice || bike.totalPrice;
@@ -56,13 +52,12 @@ const createOrder = async (req: Request, res: Response) => {
 
     await Bike.updateOne(
       { _id: product },
-      { $set: { quantity: updatedQuantity, isStock } }
+      { $set: { quantity: updatedQuantity, isStock } },
     );
 
     // Prepare and create the order
     const orderInfo = { email, product: bike._id, quantity, totalPrice };
     const result = await orderService.createOrder(orderInfo);
-
 
     return res.status(201).json({
       message: 'Order created successfully',
@@ -80,61 +75,54 @@ const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-
 // Get total revenue
 const getTotalRevenueController = async (req: Request, res: Response) => {
-    try {
-      const totalRevenue = await orderService.getTotalRevenue(); // Call the service to get total revenue
-    return  res.status(200).json({
-        message: 'Revenue calculated successfully',
-        status: true,
-        data: {
-          totalRevenue, // Send the calculated revenue in the response
-        },
-      });
-    } catch (err) {
-        const error = err as Error;
-      return  res.status(500).json({
-          message: 'Error calculating revenue',
-          status: false,
-          error: error.message,
-        });
-      }
-  };
+  try {
+    const totalRevenue = await orderService.getTotalRevenue(); // Call the service to get total revenue
+    return res.status(200).json({
+      message: 'Revenue calculated successfully',
+      status: true,
+      data: {
+        totalRevenue, // Send the calculated revenue in the response
+      },
+    });
+  } catch (err) {
+    const error = err as Error;
+    return res.status(500).json({
+      message: 'Error calculating revenue',
+      status: false,
+      error: error.message,
+    });
+  }
+};
 
-
-  const getAllOrder = async (req: Request, res: Response) => {
-  
-    try {
-      
-      const result = await orderService.getAllOrderFromDB();
-      if(result.length === 0){
-      return  res.status(404).json({
-          message: 'Not Order Found',
-          status: false,
-          data: result,
-        });
-      }
-     return res.status(200).json({
-        message: 'Orders retrieved successfully',
-        status: true,
+const getAllOrder = async (req: Request, res: Response) => {
+  try {
+    const result = await orderService.getAllOrderFromDB();
+    if (result.length === 0) {
+      return res.status(404).json({
+        message: 'Not Order Found',
+        status: false,
         data: result,
       });
-     
-  
-    } catch (err) {
-      const error = err as Error;
-    return  res.status(500).json({
-        message: error.message,
-        success: false,
-        error: error,
-      });
     }
-  };
-
+    return res.status(200).json({
+      message: 'Orders retrieved successfully',
+      status: true,
+      data: result,
+    });
+  } catch (err) {
+    const error = err as Error;
+    return res.status(500).json({
+      message: error.message,
+      success: false,
+      error: error,
+    });
+  }
+};
 
 export const orderController = {
   createOrder,
   getTotalRevenueController,
-  getAllOrder
+  getAllOrder,
 };

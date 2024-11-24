@@ -8,7 +8,6 @@ const createBike = async (bikeData: Tbike) => {
 
 const getAllBikeFromDB = async (searchTerm?: string) => {
   try {
-    // If no search term is provided, return all bikes
     let query = {};
     if (searchTerm) {
       // Search in name, brand, or category fields

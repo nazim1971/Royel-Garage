@@ -22,7 +22,6 @@ export default [
     ignores: ['.node_modules/*', '.dist'],
   },
 
-  // ESLint rules
   {
     rules: {
       eqeqeq: 'off', 
@@ -32,17 +31,14 @@ export default [
         'error',
         { allowShortCircuit: true, allowTernary: true },
       ], // Allow short-circuiting and ternary expressions
-      'no-console': 'warn', // Warn on console usage
-      'no-undef': 'error', // Prevent usage of undefined variables
+      'no-console': 'warn', 
+      'no-undef': 'error', 
     },
   },
 
-  // Recommended JS rules
   pluginJs.configs.recommended,
 
-  // Recommended TypeScript rules
   ...tseslint.configs.recommended,
 
-  // Prettier config (disable conflicting rules)
   eslintConfigPrettier,
 ];

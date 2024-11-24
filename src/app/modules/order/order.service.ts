@@ -15,18 +15,18 @@ const getTotalRevenue = async () => {
           from: 'bikes', 
           localField: 'product', 
           foreignField: '_id', 
-          as: 'bikeDetails', 
+          as: 'bikeData', 
         },
       },
       {
         $unwind: {
-          path: '$bikeDetails',
+          path: '$bikeData',
           preserveNullAndEmptyArrays: false, 
         },
       },
       {
         $addFields: {
-          totalPrice: { $multiply: ['$bikeDetails.price', '$quantity'] }, 
+          totalPrice: { $multiply: ['$bikeData.price', '$quantity'] }, 
         },
       },
       {

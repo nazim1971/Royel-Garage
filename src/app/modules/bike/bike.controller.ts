@@ -62,7 +62,6 @@ const getAllBike = async (req: Request, res: Response) => {
 
 const getSingleBike = async (req: Request, res: Response) => {
   try {
-    //Received bike id as param
     const { bikeId } = req.params;
 
     const result = await bikeService.getSingleBikeFromDB(bikeId);
